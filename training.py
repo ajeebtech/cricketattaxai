@@ -39,7 +39,7 @@ for player_dict in data:
                 y.append(labels)
 
         except Exception as e:
-            print(f"Error processing {player}: {e}")
+            pass
 
 X = np.array(X)
 y = np.array(y)
@@ -60,7 +60,7 @@ X_test = scaler.transform(X_test)
 
 # Build the neural network
 model = keras.Sequential([
-    keras.layers.Dense(64, activation="relu", input_shape=(6,)),
+    keras.layers.Dense(64, activation="relu", input_shape=(7,)),
     keras.layers.Dense(32, activation="relu"),
     keras.layers.Dense(3)
 ])
