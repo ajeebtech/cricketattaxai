@@ -129,13 +129,19 @@ model = keras.models.load_model("player_performance_model.keras", compile=False)
 #[matches, runs_made, strike_rate, batting_avg, bowling_avg, wickets, economy_rate]
 with open("/Users/jatin/Documents/python/cricket attax/dummy.json") as f:
     data = json.load(f)
-new_player = np.array(data[player]['matches'], data[player]['runs_made'], data[player]['strike_rate'], data[player]['batting_average'], data[player]['bowling_average'], data[player]['wickets'], data[player]['economy_rate'])
+
+new_player = np.array([[data[player]['matches'],data[player]['runs_made'], data[player]['strike_rate'],data[player]['batting_average'], data[player]['bowling_average'],data[player]['wickets'], data[player]['economy_rate']]])
+print(new_player)
 
 # Scale the input
 new_player_scaled = scaler.transform(new_player)
 
 # Predict batting, runs, and bowling
 predicted_values = model.predict(new_player_scaled)
-predicted_values[0] = [int(x.item()) for x in predicted_values[0]]
+predicted_values[0] = np.array([int(x.item()) for x in predicted_values[0]])
+if predicted_values[0][0] > 101:
+    predicted_values[0][0] = 101
+if predicted_values[0][1] > 101:
+    predicted_values[0][1] = 101
 print(f"Batting: {predicted_values[0][0]}, Runs: {predicted_values[0][1]}, Bowling: {predicted_values[0][2]}")
 
