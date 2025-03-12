@@ -14,15 +14,16 @@ from sklearn.preprocessing import StandardScaler
 import joblib  
 options = Options()
 options.headless = True
-options.add_argument('--headless')
 import json    
 def stats_taking(player):
     global data  # Ensure we're modifying the global data variable
     data = {}  # Reset data for a single player
     data[player] = {}  # Initialize player dictionary
     driver = webdriver.Chrome(options=options)
+    options.add_argument('--headless')
     driver.get('https://stats.espncricinfo.com/ci/engine/stats/index.html')
     driver.maximize_window()
+
     search_box = driver.find_element(By.NAME, "search")
     search_box.send_keys(player.strip())
     search_box.send_keys(Keys.RETURN)
@@ -129,20 +130,7 @@ model = keras.models.load_model("player_performance_model.keras", compile=False)
 with open("/Users/jatin/Documents/python/cricket attax/dummy.json") as f:
     data = json.load(f)
 
-stats = [
-    data[player].get("matches", np.nan),
-    data[player].get("runs_made", np.nan),
-    data[player].get("strike_rate", np.nan),
-    data[player].get("batting_average", np.nan),
-    data[player].get("bowling_average", np.nan),
-    data[player].get("wickets", np.nan),
-    data[player].get("economy_rate", np.nan),
-]
-
-# Convert to NumPy array
-new_player = np.array([stats], dtype=np.float32)
-new_player = np.nan_to_num(new_player, nan=scaler.mean_)
-
+new_player = np.array([[data[player]['matches'],data[player]['runs_made'], data[player]['strike_rate'],data[player]['batting_average'], data[player]['bowling_average'],data[player]['wickets'], data[player]['economy_rate']]])
 print(new_player)
 
 # Scale the input
@@ -153,8 +141,9 @@ predicted_values = model.predict(new_player_scaled)
 predicted_values[0] = np.array([int(x.item()) for x in predicted_values[0]])
 if predicted_values[0][0] > 101:
     predicted_values[0][0] = 101
-predicted_values[0][0] = max(-predicted_values[0][0],predicted_values[0][0])
 if predicted_values[0][1] > 101:
     predicted_values[0][1] = 101
-predicted_values[0][1] = max(-predicted_values[0][1],predicted_values[0][1])
+predicted_values[0][0] = abs(predicted_values[0][0])
+predicted_values[0][2] = abs(predicted_values[0][2])
 print(f"Batting: {predicted_values[0][0]}, Runs: {predicted_values[0][1]}, Bowling: {predicted_values[0][2]}")
+
