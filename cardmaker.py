@@ -23,7 +23,6 @@ def stats_taking(player):
     driver = webdriver.Chrome(options=options)
     driver.get('https://stats.espncricinfo.com/ci/engine/stats/index.html')
     driver.maximize_window()
-
     search_box = driver.find_element(By.NAME, "search")
     search_box.send_keys(player.strip())
     search_box.send_keys(Keys.RETURN)
@@ -154,6 +153,8 @@ predicted_values = model.predict(new_player_scaled)
 predicted_values[0] = np.array([int(x.item()) for x in predicted_values[0]])
 if predicted_values[0][0] > 101:
     predicted_values[0][0] = 101
+predicted_values[0][0] = max(-predicted_values[0][0],predicted_values[0][0])
 if predicted_values[0][1] > 101:
     predicted_values[0][1] = 101
+predicted_values[0][1] = max(-predicted_values[0][1],predicted_values[0][1])
 print(f"Batting: {predicted_values[0][0]}, Runs: {predicted_values[0][1]}, Bowling: {predicted_values[0][2]}")
