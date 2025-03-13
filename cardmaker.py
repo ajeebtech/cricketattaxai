@@ -14,6 +14,12 @@ from sklearn.preprocessing import StandardScaler
 import joblib  
 options = Options()
 options.headless = True
+options.add_argument('--headless')
+options.add_experimental_option("prefs", {
+    "profile.managed_default_content_settings.images": 2,
+    "profile.managed_default_content_settings.javascript": 2
+})
+options.add_argument("--disable-gpu --log-level=3 --disable-extensions --blink-settings=imagesEnabled=false --disable-blink-features=AutomationControlled")
 import json    
 def stats_taking(player):
     global data  # Ensure we're modifying the global data variable
@@ -131,6 +137,7 @@ with open("/Users/jatin/Documents/python/cricket attax/dummy.json") as f:
     data = json.load(f)
 
 new_player = np.array([[data[player]['matches'],data[player]['runs_made'], data[player]['strike_rate'],data[player]['batting_average'], data[player]['bowling_average'],data[player]['wickets'], data[player]['economy_rate']]])
+new_player = np.nan_to_num(new_player, nan=scaler.mean_)
 print(new_player)
 
 # Scale the input
@@ -146,4 +153,3 @@ if predicted_values[0][1] > 101:
 predicted_values[0][0] = abs(predicted_values[0][0])
 predicted_values[0][2] = abs(predicted_values[0][2])
 print(f"Batting: {predicted_values[0][0]}, Runs: {predicted_values[0][1]}, Bowling: {predicted_values[0][2]}")
-
