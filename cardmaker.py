@@ -56,7 +56,6 @@ def stats_taking(player):
                     matches_count = int(match.group(1))
                     if matches_count > max_matches:
                         max_matches = matches_count
-                        data[player]['matches'] = matches_count 
                         link_to_click = link
         except Exception:
             continue
@@ -81,7 +80,10 @@ def stats_taking(player):
 
     row = driver.find_element(By.XPATH, "//tr[@class='data1']")
     cells = row.find_elements(By.TAG_NAME, "td")
-
+    try:
+        data[player]['matches'] = int(cells[2].text)
+    except Exception:
+        data[player]['matches'] = None
     try:
         data[player]['wickets'] = int(cells[7].text)
     except Exception:
@@ -103,7 +105,7 @@ def stats_taking(player):
     submit_button = driver.find_element(By.XPATH, "//input[@type='submit' and @value='Submit query']")
     submit_button.click()
 
-    table_row = driver.find_element(By.CLASS_NAME, "data1")
+    table_row = driver.find_element(By.CLASS_NAME, "data1")   # this is a PROBLEMMMMMMMMMMMMMMMMMMMMMM
     cells = table_row.find_elements(By.TAG_NAME, "td")
 
     try:
@@ -148,8 +150,9 @@ predicted_values = model.predict(new_player_scaled)
 predicted_values[0] = np.array([int(x.item()) for x in predicted_values[0]])
 if predicted_values[0][0] > 101:
     predicted_values[0][0] = 101
-if predicted_values[0][1] > 101:
-    predicted_values[0][1] = 101
+if predicted_values[0][2] > 101:
+    predicted_values[0][2] = 101
 predicted_values[0][0] = abs(predicted_values[0][0])
+predicted_values[0][1] = abs(predicted_values[0][1])
 predicted_values[0][2] = abs(predicted_values[0][2])
 print(f"Batting: {predicted_values[0][0]}, Runs: {predicted_values[0][1]}, Bowling: {predicted_values[0][2]}")
